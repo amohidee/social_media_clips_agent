@@ -170,35 +170,27 @@ async function callClaude({
   userMessage: string;
   maxTokens?: number;
 }): Promise<string> {
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
+  const response = await fetch("http://localhost:5000/api/discovery/run", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-api-key": import.meta.env.VITE_ANTHROPIC_API_KEY as string,
-      "anthropic-version": "2023-06-01",
-      "anthropic-dangerous-direct-browser-access": "true",
     },
     body: JSON.stringify({
-      model: CLAUDE_MODEL,
-      max_tokens: maxTokens,
       system: systemPrompt,
-      messages: [{ role: "user", content: userMessage }],
+      message: userMessage,
+      max_tokens: maxTokens,
     }),
   });
 
   if (!response.ok) {
-    const err = (await response.json().catch(() => ({}))) as ClaudeResponseBody;
-    throw new Error(err?.error?.message ?? `API error ${response.status}`);
+    const err = await response.json().catch(() => ({})) as { error?: string };
+    throw new Error(err?.error ?? `API error ${response.status}`);
   }
 
-  const data = (await response.json()) as ClaudeResponseBody;
-  const text = data.content
-    ?.filter((b) => b.type === "text")
-    .map((b) => b.text)
-    .join("\n");
+  const data = await response.json() as { text: string };
 
-  if (!text) throw new Error("Empty response from Claude");
-  return text;
+  if (!data.text) throw new Error("Empty response from backend");
+  return data.text;
 }
 
 function parseJsonResponse(raw: string): unknown {
@@ -245,49 +237,25 @@ async function runDiscovery(
   prompt: string,
   onProgress: (p: DiscoveryProgress) => void
 ): Promise<DiscoveryResult> {
-  // STEP 1 — Generate multilingual query variants
   onProgress({ stage: "queries", message: "Generating multilingual search queries…" });
-
-  const queryVariantsRaw = await callClaude({
-    systemPrompt: `You are a multilingual research strategist for Islamic media discovery.
-Generate search query variants in English, Arabic (عربي), Urdu (اردو), and Turkish for the given topic.
-Return ONLY a JSON array of strings — no explanations, no markdown.`,
-    userMessage: `Generate 12–16 effective search queries for: "${prompt}"
-Include English, Arabic, Urdu, and Turkish variants. Cover synonyms, sub-genres, and topic angles.
-Return only a JSON array.`,
-    maxTokens: 1000,
-  });
-
-  let queries: string[] = [];
-  try {
-    const parsed = parseJsonResponse(queryVariantsRaw);
-    if (Array.isArray(parsed)) queries = parsed as string[];
-  } catch {
-    queries = [prompt];
-  }
-
-  // STEP 2 — Discover media entries
-  onProgress({ stage: "discovery", message: `Running discovery with ${queries.length} queries…`, queries });
+  onProgress({ stage: "discovery", message: "Running discovery…", queries: [] });
 
   const discoveryRaw = await callClaude({
-    systemPrompt: DISCOVERY_SYSTEM,
-    userMessage: `Using these search strategies:
-${queries.map((q, i) => `${i + 1}. ${q}`).join("\n")}
-
-Discover Muslim-themed movies, TV series, YouTube shows, and documentaries.
-Focus especially on content related to Islamic finance, riba, halal investing, sukuk, zakat, waqf, and Islamic economics.
-Include content in Arabic, English, Urdu, Turkish, and other languages.
-
-${DISCOVERY_SCHEMA}
-
-Find at least 15–25 distinct entries. Be thorough. Return only the JSON object.`,
+    systemPrompt: "",
+    userMessage: prompt,
     maxTokens: 4096,
   });
 
-  const parsed = parseJsonResponse(discoveryRaw) as RawDiscoveryResponse;
-  const entries: MediaEntry[] = (parsed.entries ?? []).map((e) => ({
+  const parsed = parseJsonResponse(discoveryRaw);
+
+  // Handle both a raw array [ ] and a wrapped object { entries: [ ] }
+  const rawEntries: RawDiscoveryEntry[] = Array.isArray(parsed)
+    ? parsed
+    : (parsed as RawDiscoveryResponse).entries ?? [];
+
+  const entries: MediaEntry[] = rawEntries.map((e) => ({
     id: e.id ?? crypto.randomUUID(),
-    title_en: e.title_en,
+    title_en: e.title_en ?? "Untitled",
     title_ar: e.title_ar ?? null,
     title_ur: e.title_ur ?? null,
     title_tr: e.title_tr ?? null,
@@ -296,8 +264,8 @@ Find at least 15–25 distinct entries. Be thorough. Return only the JSON object
     language: e.language ?? "Other",
     year: e.year ?? null,
     description: e.description ?? null,
-    tags: e.tags ?? [],
-    source_urls: e.source_urls ?? [],
+    tags: Array.isArray(e.tags) ? e.tags : [],
+    source_urls: Array.isArray(e.source_urls) ? e.source_urls : [],
     islamic_finance_relevance: e.islamic_finance_relevance ?? "none",
     notes: e.notes ?? null,
     status: "New",
@@ -306,7 +274,7 @@ Find at least 15–25 distinct entries. Be thorough. Return only the JSON object
     updated_at: null,
   }));
 
-  return { entries, queries: parsed.queries_used ?? queries };
+  return { entries, queries: [] };
 }
 
 // ─────────────────────────────────────────────
