@@ -128,21 +128,12 @@ interface RawDiscoveryEntry {
   notes?: string | null;
 }
 
-interface SystemStatus {
-  ok: boolean;
-  library_count: number;
-  transcript_count: number;
-  chunk_count: number;
-  embedded_chunk_count: number;
-  approved_count: number;
-  transcribed_count: number;
-}
 
 // ─────────────────────────────────────────────
 // CONSTANTS
 // ─────────────────────────────────────────────
 
-const API_BASE = "http://localhost:5000";
+const API_BASE = "";
 
 const STATUS_COLORS: Record<EntryStatus, string> = {
   New: "bg-amber-500/20 text-amber-300 border-amber-500/40",
@@ -191,11 +182,11 @@ const CONFIDENCE_COLORS: Record<MomentConfidence, string> = {
 };
 
 const EXAMPLE_PROMPTS: string[] = [
-  "Islamic finance in media",
-  "Movies about Islamic banking and halal investing",
-  "Series discussing riba and Islamic economics",
-  "Documentaries on sukuk and Islamic finance",
-  "Muslim-themed financial literacy content",
+  "Historical Muslim TV shows and movies",
+  "Islamic civilization and Ottoman empire dramas",
+  "Movies about Prophet companions and early Islam",
+  "Documentaries on Islamic golden age and history",
+  "Muslim historical epics and period dramas",
 ];
 
 const IF_SEARCH_PROMPTS: string[] = [
@@ -315,6 +306,33 @@ async function fetchTranscript(
   return data.transcript;
 }
 
+async function loadLibrary(): Promise<MediaEntry[]> {
+  const response = await fetch(`${API_BASE}/api/library`);
+  const data = await response.json() as MediaEntry[];
+  return Array.isArray(data) ? data : [];
+}
+
+async function saveLibrary(entries: MediaEntry[]): Promise<void> {
+  const response = await fetch(`${API_BASE}/api/library`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(entries),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to save library (${response.status})`);
+  }
+}
+
+let libraryLoadPromise: Promise<MediaEntry[]> | null = null;
+
+function loadLibraryOnce(): Promise<MediaEntry[]> {
+  if (libraryLoadPromise == null) {
+    libraryLoadPromise = loadLibrary();
+  }
+  return libraryLoadPromise;
+}
+
 async function computeEmbeddings(): Promise<{ chunks_embedded: number }> {
   const response = await fetch(`${API_BASE}/api/embeddings/compute`, { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
   return response.json() as Promise<{ chunks_embedded: number }>;
@@ -380,6 +398,53 @@ function formatTime(seconds: number | null): string {
 
 function useMediaLibrary() {
   const [entries, setEntries] = useState<MediaEntry[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const lastSavedSnapshotRef = useRef<string | null>(null);
+  const hasHydratedRef = useRef(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    loadLibraryOnce()
+      .then((savedEntries) => {
+        if (isMounted) {
+          setEntries(savedEntries);
+          lastSavedSnapshotRef.current = JSON.stringify(savedEntries);
+          hasHydratedRef.current = true;
+          setIsLoaded(true);
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          lastSavedSnapshotRef.current = JSON.stringify([]);
+          hasHydratedRef.current = true;
+          setIsLoaded(true);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isLoaded || !hasHydratedRef.current) return;
+
+    const snapshot = JSON.stringify(entries);
+    if (snapshot === lastSavedSnapshotRef.current) return;
+
+    const timeoutId = window.setTimeout(() => {
+      saveLibrary(entries)
+        .then(() => {
+          lastSavedSnapshotRef.current = snapshot;
+        })
+        .catch(() => {});
+    }, 300);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [entries, isLoaded]);
 
   const addEntries = useCallback((newEntries: MediaEntry[]) => {
     setEntries((prev) => deduplicateEntries(prev, newEntries));
@@ -417,7 +482,7 @@ function useMediaLibrary() {
     highRelevance: entries.filter((e) => e.islamic_finance_relevance === "high").length,
   }), [entries]);
 
-  return { entries, addEntries, updateStatus, updateNotes, updateYoutubeUrl, stats };
+  return { entries, addEntries, updateStatus, updateNotes, updateYoutubeUrl, stats, isLoaded };
 }
 
 function useDiscovery(onEntriesFound: (entries: MediaEntry[]) => void) {
@@ -572,6 +637,7 @@ function EntryCard({ entry, onStatusChange, onNotesChange, onYoutubeUrlChange }:
                 className="flex-1 text-xs bg-white/[0.05] border border-white/[0.1] rounded px-2 py-1.5 text-zinc-300 focus:outline-none focus:border-amber-500/40"
               />
               <button
+                type="button"
                 onClick={(e) => { e.stopPropagation(); onYoutubeUrlChange(entry.id, urlDraft); }}
                 className="text-xs px-3 py-1.5 rounded bg-amber-500/15 border border-amber-500/30 text-amber-300 hover:bg-amber-500/25 transition-all"
               >
@@ -593,7 +659,7 @@ function EntryCard({ entry, onStatusChange, onNotesChange, onYoutubeUrlChange }:
           <div>
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs text-zinc-500">Notes</span>
-              <button onClick={(e) => { e.stopPropagation(); setEditingNotes((v) => !v); }} className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors">
+              <button type="button" onClick={(e) => { e.stopPropagation(); setEditingNotes((v) => !v); }} className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors">
                 {editingNotes ? "✓ done" : "✏ edit"}
               </button>
             </div>
@@ -615,7 +681,7 @@ function EntryCard({ entry, onStatusChange, onNotesChange, onYoutubeUrlChange }:
           {nextStatuses.length > 0 && (
             <div className="flex gap-2 pt-1">
               {nextStatuses.map((s) => (
-                <button key={s} onClick={(e) => { e.stopPropagation(); onStatusChange(entry.id, s); }} className={`text-xs px-3 py-1 rounded-full border transition-all hover:scale-105 ${STATUS_COLORS[s]}`}>
+                <button type="button" key={s} onClick={(e) => { e.stopPropagation(); onStatusChange(entry.id, s); }} className={`text-xs px-3 py-1 rounded-full border transition-all hover:scale-105 ${STATUS_COLORS[s]}`}>
                   Mark as {s}
                 </button>
               ))}
@@ -649,7 +715,7 @@ function SearchTab({ onEntriesFound }: { onEntriesFound: (entries: MediaEntry[])
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey) && prompt.trim()) run(prompt); }}
-          placeholder={`Enter a discovery prompt, e.g. "Islamic finance in media"…`}
+          placeholder={`Enter a discovery prompt, e.g. "Historical Muslim TV shows and movies"…`}
           rows={3}
           className="w-full bg-white/[0.04] border border-white/[0.1] rounded-xl px-4 py-3 text-[#F5F0E8] placeholder-zinc-600 text-sm resize-none focus:outline-none focus:border-amber-500/50 transition-colors"
           style={{ backdropFilter: "blur(8px)" }}
@@ -792,20 +858,56 @@ function LibraryTab({ entries, stats, onStatusChange, onNotesChange, onYoutubeUr
 function TranscriptsTab({ entries }: { entries: MediaEntry[] }) {
   const [transcripts, setTranscripts] = useState<TranscriptRecord[]>([]);
   const [loading, setLoading] = useState<Record<string, boolean>>({});
+  const [batchStatus, setBatchStatus] = useState<string | null>(null);
   const [embeddingStatus, setEmbeddingStatus] = useState<string | null>(null);
   const [isEmbedding, setIsEmbedding] = useState(false);
+  const [expandedTranscript, setExpandedTranscript] = useState<string | null>(null);
 
-  const approvedEntries = useMemo(
-    () => entries.filter((e) => e.status === "Approved"),
+  const entriesWithUrl = useMemo(
+    () => entries.filter((e) => e.youtube_url),
     [entries]
   );
 
+  // Keep entries in a ref so the one-time mount effect can read the latest value
+  // without being reactive to changes.
+  const entriesRef = useRef(entries);
+  useEffect(() => { entriesRef.current = entries; }, [entries]);
+
+  // Load transcripts on mount, then immediately auto-fetch any that are missing.
+  // Runs exactly once — no reactive deps — so re-renders never restart the loop.
   useEffect(() => {
+    let isMounted = true;
+
     fetch(`${API_BASE}/api/transcripts`)
       .then((r) => r.json())
-      .then((data) => setTranscripts(data as TranscriptRecord[]))
+      .then(async (existing: TranscriptRecord[]) => {
+        if (!isMounted) return;
+        setTranscripts(existing);
+
+        const transcribedIds = new Set(
+          existing.filter((t) => t.status === "Transcribed").map((t) => t.media_id)
+        );
+        const toFetch = entriesRef.current.filter(
+          (e) => e.youtube_url && !transcribedIds.has(e.id)
+        );
+
+        for (const entry of toFetch) {
+          if (!isMounted) break;
+          setLoading((prev) => ({ ...prev, [entry.id]: true }));
+          try {
+            const record = await fetchTranscript(entry.id, entry.youtube_url ?? "", entry.title_en);
+            if (isMounted) setTranscripts((prev) => [...prev.filter((t) => t.media_id !== entry.id), record]);
+          } catch {
+            // skip — user can retry via Re-fetch button
+          } finally {
+            if (isMounted) setLoading((prev) => ({ ...prev, [entry.id]: false }));
+          }
+        }
+      })
       .catch(() => {});
-  }, []);
+
+    return () => { isMounted = false; };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const getTranscriptFor = (mediaId: string) =>
     transcripts.find((t) => t.media_id === mediaId);
@@ -824,6 +926,43 @@ function TranscriptsTab({ entries }: { entries: MediaEntry[] }) {
     } finally {
       setLoading((prev) => ({ ...prev, [entry.id]: false }));
     }
+  };
+
+  const handleFetchAll = async () => {
+    const entriesToFetch = entriesWithUrl;
+
+    if (entriesToFetch.length === 0) {
+      setBatchStatus("No entries with a YouTube URL yet.");
+      return;
+    }
+
+    setBatchStatus(null);
+
+    let successCount = 0;
+    let failureCount = 0;
+
+    for (const entry of entriesToFetch) {
+      setLoading((prev) => ({ ...prev, [entry.id]: true }));
+
+      try {
+        const record = await fetchTranscript(entry.id, entry.youtube_url ?? "", entry.title_en);
+        successCount += 1;
+        setTranscripts((prev) => {
+          const filtered = prev.filter((t) => t.media_id !== entry.id);
+          return [...filtered, record];
+        });
+      } catch {
+        failureCount += 1;
+      } finally {
+        setLoading((prev) => ({ ...prev, [entry.id]: false }));
+      }
+    }
+
+    setBatchStatus(
+      failureCount === 0
+        ? `Fetched ${successCount} transcript${successCount === 1 ? "" : "s"}.`
+        : `Fetched ${successCount} transcript${successCount === 1 ? "" : "s"} with ${failureCount} failure${failureCount === 1 ? "" : "s"}.`
+    );
   };
 
   const handleComputeEmbeddings = async () => {
@@ -846,9 +985,18 @@ function TranscriptsTab({ entries }: { entries: MediaEntry[] }) {
       <div className="flex items-start justify-between">
         <div>
           <h2 className="text-2xl font-bold text-[#F5F0E8]" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Transcripts</h2>
-          <p className="text-zinc-400 text-sm mt-1">Fetch YouTube captions for Approved entries, then compute embeddings for vector search.</p>
+          <p className="text-zinc-400 text-sm mt-1">Transcripts are fetched automatically for all entries with a YouTube URL.</p>
+          {batchStatus != null && <p className="text-emerald-400 text-xs mt-2">{batchStatus}</p>}
         </div>
-        <div className="text-right">
+        <div className="text-right space-y-3">
+          <button
+            type="button"
+            onClick={handleFetchAll}
+            disabled={entriesWithUrl.length === 0 || Object.values(loading).some(Boolean)}
+            className="px-4 py-2 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-medium hover:bg-emerald-500/25 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+          >
+            Fetch All URLs
+          </button>
           <p className="text-2xl font-bold text-emerald-400" style={{ fontFamily: "'Cormorant Garamond', serif" }}>{transcribedCount}</p>
           <p className="text-zinc-500 text-xs">transcribed</p>
         </div>
@@ -863,6 +1011,7 @@ function TranscriptsTab({ entries }: { entries: MediaEntry[] }) {
             {embeddingStatus != null && <p className="text-emerald-400 text-xs mt-1">{embeddingStatus}</p>}
           </div>
           <button
+            type="button"
             onClick={handleComputeEmbeddings}
             disabled={isEmbedding}
             className="shrink-0 px-4 py-2 rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-medium hover:bg-amber-500/30 disabled:opacity-50 transition-all"
@@ -872,15 +1021,15 @@ function TranscriptsTab({ entries }: { entries: MediaEntry[] }) {
         </div>
       )}
 
-      {approvedEntries.length === 0 ? (
+      {entriesWithUrl.length === 0 ? (
         <div className="text-center py-16 space-y-3">
           <p className="text-4xl">📋</p>
-          <p className="text-zinc-400 text-sm">No approved entries yet.</p>
-          <p className="text-zinc-600 text-xs">Go to Media Library → mark entries as Approved to queue them here.</p>
+          <p className="text-zinc-400 text-sm">No entries with a YouTube URL yet.</p>
+          <p className="text-zinc-600 text-xs">Run discovery — YouTube URLs are auto-filled for each result.</p>
         </div>
       ) : (
         <div className="space-y-2">
-          {approvedEntries.map((entry) => {
+          {entriesWithUrl.map((entry) => {
             const transcript = getTranscriptFor(entry.id);
             const isLoading = loading[entry.id] ?? false;
             const hasUrl = Boolean(entry.youtube_url);
@@ -900,26 +1049,56 @@ function TranscriptsTab({ entries }: { entries: MediaEntry[] }) {
                       <p className="text-xs text-zinc-600 mt-0.5">No YouTube URL — add one in the Library tab</p>
                     )}
                     {transcript != null && (
-                      <div className="flex items-center gap-3 mt-2">
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${TRANSCRIPT_STATUS_COLORS[transcript.status]}`}>
-                          {transcript.status}
-                        </span>
-                        {transcript.status === "Transcribed" && (
-                          <span className="text-xs text-zinc-500">
-                            {transcript.chunk_count} chunks · {transcript.has_timestamps ? "timestamps ✓" : "no timestamps"}
+                      <div className="mt-2 space-y-2">
+                        <div className="flex items-center gap-3">
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${TRANSCRIPT_STATUS_COLORS[transcript.status]}`}>
+                            {transcript.status}
                           </span>
+                          {transcript.status === "Transcribed" && (
+                            <span className="text-xs text-zinc-500">
+                              {transcript.chunk_count} chunks · {transcript.has_timestamps ? "timestamps ✓" : "no timestamps"}
+                            </span>
+                          )}
+                          {transcript.notes && <span className="text-xs text-red-400/70">{transcript.notes}</span>}
+                          {transcript.status === "Transcribed" && transcript.transcript_text && (
+                            <button
+                              type="button"
+                              onClick={() => setExpandedTranscript(expandedTranscript === entry.id ? null : entry.id)}
+                              className="text-xs text-blue-400/70 hover:text-blue-400 underline"
+                            >
+                              {expandedTranscript === entry.id ? "Hide transcript" : "View transcript"}
+                            </button>
+                          )}
+                        </div>
+                        {expandedTranscript === entry.id && (
+                          <div className="rounded-lg border border-white/[0.06] bg-black/30 p-3 max-h-64 overflow-y-auto">
+                            <p className="text-xs text-zinc-300 leading-relaxed whitespace-pre-wrap">{transcript.transcript_text}</p>
+                          </div>
                         )}
-                        {transcript.notes && <span className="text-xs text-red-400/70">{transcript.notes}</span>}
                       </div>
                     )}
                   </div>
-                  <button
-                    onClick={() => handleFetch(entry)}
-                    disabled={!hasUrl || isLoading}
-                    className="shrink-0 px-3 py-1.5 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-medium hover:bg-emerald-500/25 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                  >
-                    {isLoading ? "Fetching…" : transcript?.status === "Transcribed" ? "Re-fetch" : "Fetch Transcript"}
-                  </button>
+                  <div className="flex flex-col items-end gap-2 shrink-0">
+                    {transcript?.status === "Transcribed" ? (
+                      <button
+                        type="button"
+                        onClick={() => handleFetch(entry)}
+                        disabled={isLoading}
+                        className="px-3 py-1.5 rounded-lg bg-zinc-500/15 border border-zinc-500/30 text-zinc-400 text-xs font-medium hover:bg-zinc-500/25 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                      >
+                        {isLoading ? "Fetching…" : "Re-fetch"}
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => handleFetch(entry)}
+                        disabled={!hasUrl || isLoading}
+                        className="px-3 py-1.5 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-medium hover:bg-emerald-500/25 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                      >
+                        {isLoading ? "Fetching…" : "Fetch Transcript"}
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             );
@@ -1100,8 +1279,20 @@ function IslamicFinanceTab() {
 // ─────────────────────────────────────────────
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState("search");
-  const { entries, addEntries, updateStatus, updateNotes, updateYoutubeUrl, stats } = useMediaLibrary();
+  const [activeTab, setActiveTab] = useState(() => window.sessionStorage.getItem("activeTab") ?? "search");
+  const { entries, addEntries, updateStatus, updateNotes, updateYoutubeUrl, stats, isLoaded } = useMediaLibrary();
+
+  useEffect(() => {
+    window.sessionStorage.setItem("activeTab", activeTab);
+  }, [activeTab]);
+
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-zinc-400" style={{ background: "linear-gradient(135deg, #071A11 0%, #0D2B1E 50%, #091612 100%)" }}>
+        Loading library...
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen text-[#F5F0E8]" style={{ background: "linear-gradient(135deg, #071A11 0%, #0D2B1E 50%, #091612 100%)" }}>
@@ -1119,7 +1310,7 @@ export default function App() {
 
         <nav className="flex gap-1 mb-8 p-1 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
           {TABS.map((tab) => (
-            <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${activeTab === tab.id ? "bg-amber-500/15 text-amber-300 border border-amber-500/30 shadow-lg" : "text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.04]"}`}>
+            <button type="button" key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${activeTab === tab.id ? "bg-amber-500/15 text-amber-300 border border-amber-500/30 shadow-lg" : "text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.04]"}`}>
               <span>{tab.icon}</span>
               <span className="hidden sm:inline">{tab.label}</span>
               {tab.id === "library" && entries.length > 0 && (

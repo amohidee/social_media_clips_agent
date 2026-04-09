@@ -25,10 +25,13 @@ CORS(app)
 # FILE PATHS (acts as a simple file-based database for MVP)
 # ─────────────────────────────────────────────
 
-DATA_FILE = "data.json"
-TRANSCRIPTS_FILE = "transcripts.json"
-CHUNKS_FILE = "chunks.json"          # chunked transcript segments
-EMBEDDINGS_FILE = "embeddings.json"  # stored embeddings (list of floats per chunk)
+DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
+os.makedirs(DATA_DIR, exist_ok=True)
+
+DATA_FILE = os.path.join(DATA_DIR, "data.json")
+TRANSCRIPTS_FILE = os.path.join(DATA_DIR, "transcripts.json")
+CHUNKS_FILE = os.path.join(DATA_DIR, "chunks.json")
+EMBEDDINGS_FILE = os.path.join(DATA_DIR, "embeddings.json")
 
 
 # ─────────────────────────────────────────────
@@ -63,16 +66,17 @@ def run_claude(prompt: str) -> tuple[bool, str]:
         with open(tmp, "w", encoding="utf-8") as f:
             f.write(prompt)
         result = subprocess.run(
-            f'type "{tmp}" | claude.cmd -p --output-format text',
+            f'type "{tmp}" | claude.cmd -p --output-format text --allowedTools "WebSearch,WebFetch"',
             shell=True,
             capture_output=True,
-            text=True,
-            timeout=300,
+            timeout=600,
             cwd=tempfile.gettempdir(),
         )
+        stdout = result.stdout.decode("utf-8", errors="replace")
+        stderr = result.stderr.decode("utf-8", errors="replace")
         if result.returncode != 0:
-            print(f"[Claude CLI] stderr: {result.stderr[:500]}")
-        return result.returncode == 0, result.stdout
+            print(f"[Claude CLI] stderr: {stderr[:500]}")
+        return result.returncode == 0, stdout
     except Exception as e:
         print(f"[Claude CLI] error: {e}")
         return False, str(e)
@@ -81,8 +85,10 @@ def run_claude(prompt: str) -> tuple[bool, str]:
             os.unlink(tmp)
 
 
-def extract_json_array(text: str) -> Optional[list]:
+def extract_json_array(text: Optional[str]) -> Optional[list]:
     """Extract the first JSON array from a string, tolerating surrounding text."""
+    if not text:
+        return None
     # Strip markdown code fences first
     cleaned = re.sub(r"```(?:json)?\s*", "", text).strip()
 
@@ -135,14 +141,42 @@ def extract_json_array(text: str) -> Optional[list]:
 @app.route("/api/discovery/run", methods=["POST"])
 def run_discovery():
     body = request.get_json()
-    user_topic = body.get("message", "Islamic finance in media")
+    user_topic = body.get("message", "historical Muslim TV shows and movies")
 
-    # Call 1: Discover media (will likely return markdown)
-    prompt1 = f"""Find 10-15 Muslim-themed movies, TV series, YouTube shows and documentaries related to: {user_topic}
+    # Call 1: Multi-query web research (PAI ClaudeResearch pattern)
+    # Decompose the topic into targeted sub-queries for comprehensive coverage
+    current_year = 2026
+    prompt1 = f"""You are a research agent. Your task is to find REAL Muslim-themed movies, TV series, YouTube shows and documentaries related to: {user_topic}
 
-Do NOT use web search. Just use your training knowledge — that is perfectly fine.
+## STEP 1: Execute these WebSearch queries (you MUST call WebSearch for each one)
 
-For each, include: title, type (movie/tv_series/youtube_show/documentary), year, description, language, and relevance to Islamic finance (high/medium/low/none)."""
+1. WebSearch: "{user_topic} list"
+2. WebSearch: "best Muslim movies TV shows {current_year}"
+3. WebSearch: "Islamic historical drama series recommendations"
+4. WebSearch: "{user_topic} documentary film"
+5. WebSearch: "{user_topic} YouTube channel"
+6. WebSearch: "Muslim themed movies IMDB list"
+
+## STEP 2: Compile findings
+
+After searching, compile a list of 10-15 REAL titles that appeared in your search results.
+
+CRITICAL RULES:
+- ONLY include titles you actually found in search results
+- Do NOT fabricate or hallucinate any titles
+- Include the source URL where you found each title
+- If a search returns no useful results, skip it and move on
+
+## STEP 3: Format output
+
+For each title found, include:
+- Title (English and original language if different)
+- Type: movie / tv_series / youtube_show / documentary
+- Year
+- Language
+- Brief description (from search results)
+- Source URL where you found it
+- Relevance to the topic (high/medium/low)"""
 
     success, raw = run_claude(prompt1)
     if not success:
@@ -317,6 +351,9 @@ def fetch_transcript():
             "notes": "",
             "created_at": __import__("datetime").datetime.utcnow().isoformat(),
         }
+
+        # Remove any older chunks for this media entry before writing fresh ones.
+        chunks_store = [chunk for chunk in chunks_store if chunk.get("media_id") != media_id]
 
         # Store chunk records with reference to transcript
         for i, chunk in enumerate(chunks):

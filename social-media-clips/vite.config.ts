@@ -7,4 +7,14 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  server: {
+    host: true,
+    allowedHosts: true,
+    watch: {
+      ignored: ["**/data/**"],
+    },
+    proxy: {
+      "/api": "http://localhost:5000",
+    },
+  },
 })
