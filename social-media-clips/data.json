@@ -1,0 +1,446 @@
+[
+  {
+    "description": "Epic historical drama depicting the early years of Islam and the life of Prophet Muhammad, directed by Moustapha Akkad.",
+    "discovered_at": "2026-04-04T20:54:13.541Z",
+    "id": "ab1c28a0-668f-454b-adfd-c9a25d1e73db",
+    "islamic_finance_relevance": "high",
+    "language": "Arabic / English",
+    "notes": "",
+    "source_prompt": "Historical Muslim TV shows and movies",
+    "source_urls": [
+      "https://www.imdb.com/list/ls567111014/",
+      "https://www.muslimpro.com/top-10-most-watched-islamic-movies/",
+      "https://halallifemagazine.com/top-7-best-islamic-history-tv-shows-to-watch/"
+    ],
+    "status": "New",
+    "tags": [
+      "islamic history",
+      "prophet muhammad",
+      "early islam",
+      "epic"
+    ],
+    "title_ar": "Ø§Ù„Ø±Ø³Ø§Ù„Ø©",
+    "title_en": "The Message",
+    "title_tr": null,
+    "title_translation": null,
+    "title_ur": null,
+    "type": "movie",
+    "updated_at": null,
+    "year": 1976,
+    "youtube_url": "https://www.youtube.com/watch?v=mdiViGvY5xQ"
+  },
+  {
+    "description": "Turkish historical drama following Ertugrul Ghazi, father of Osman I, and the roots of the Ottoman Empire. One of the most globally watched Islamic historical series.",
+    "discovered_at": "2026-04-04T20:54:13.562Z",
+    "id": "4db0c60a-ccd4-4496-8971-ebea794ea573",
+    "islamic_finance_relevance": "high",
+    "language": "Turkish",
+    "notes": "",
+    "source_prompt": "Historical Muslim TV shows and movies",
+    "source_urls": [
+      "https://www.imdb.com/list/ls567111014/",
+      "https://www.houseofpakistan.com/top-muslim-historical-series/",
+      "https://halallifemagazine.com/top-7-best-islamic-history-tv-shows-to-watch/"
+    ],
+    "status": "Approved",
+    "tags": [
+      "ottoman history",
+      "turkish drama",
+      "ertugrul",
+      "seljuk"
+    ],
+    "title_ar": null,
+    "title_en": "Dirilis: Ertugrul",
+    "title_tr": "DiriliÅŸ: ErtuÄŸrul",
+    "title_translation": null,
+    "title_ur": null,
+    "type": "tv_series",
+    "updated_at": "2026-04-04T21:47:30.496Z",
+    "year": 2014,
+    "youtube_url": "https://www.youtube.com/watch?v=EHqUGHva-K8"
+  },
+  {
+    "description": "Sequel to DiriliÅŸ: ErtuÄŸrul, covering Osman I's founding of the Ottoman Empire. Praised for action-packed storytelling and strong character development.",
+    "discovered_at": "2026-04-04T20:54:13.562Z",
+    "id": "b5510e76-77dc-44e1-b7b6-e81171d55a80",
+    "islamic_finance_relevance": "high",
+    "language": "Turkish",
+    "notes": "",
+    "source_prompt": "Historical Muslim TV shows and movies",
+    "source_urls": [
+      "https://www.imdb.com/list/ls567111014/",
+      "https://www.zikoko.com/pop/7-muslim-movies-and-tv-shows-to-binge-watch-in-the-spirit-of-eid/"
+    ],
+    "status": "New",
+    "tags": [
+      "ottoman history",
+      "turkish drama",
+      "osman",
+      "empire founding"
+    ],
+    "title_ar": null,
+    "title_en": "Kurulus: Osman",
+    "title_tr": "KuruluÅŸ: Osman",
+    "title_translation": null,
+    "title_ur": null,
+    "type": "tv_series",
+    "updated_at": null,
+    "year": 2019,
+    "youtube_url": "https://www.youtube.com/watch?v=UCGR1XmkoQedeJMT2ajRHvsw"
+  },
+  {
+    "description": "30-episode historical drama based on the life of Umar ibn Al-Khattab, second Caliph of Islam. Covers his pre-Islamic days through his assassination. Noted for meticulous historical accuracy.",
+    "discovered_at": "2026-04-04T20:54:13.562Z",
+    "id": "14e6a3d6-a278-460f-b3e4-07d04abda117",
+    "islamic_finance_relevance": "high",
+    "language": "Arabic",
+    "notes": "",
+    "source_prompt": "Historical Muslim TV shows and movies",
+    "source_urls": [
+      "https://dizilah.com/lists/5rr30n",
+      "https://medium.com/@fcyt999/best-islamic-historical-tv-series-19a28933fdb",
+      "https://halallifemagazine.com/top-7-best-islamic-history-tv-shows-to-watch/"
+    ],
+    "status": "New",
+    "tags": [
+      "islamic history",
+      "umar ibn al-khattab",
+      "caliphate",
+      "early islam"
+    ],
+    "title_ar": "Ø¹Ù…Ø±",
+    "title_en": "Omar",
+    "title_tr": null,
+    "title_translation": null,
+    "title_ur": null,
+    "type": "tv_series",
+    "updated_at": null,
+    "year": 2012,
+    "youtube_url": "https://www.youtube.com/watch?v=IBaDgYUEx2c"
+  },
+  {
+    "description": "Historical drama about the life of Suleiman the Magnificent, the 10th Ottoman Sultan. One of the most internationally distributed Turkish TV series.",
+    "discovered_at": "2026-04-04T20:54:13.562Z",
+    "id": "91851ff2-a05b-4eca-9372-ca297aad1161",
+    "islamic_finance_relevance": "high",
+    "language": "Turkish",
+    "notes": "",
+    "source_prompt": "Historical Muslim TV shows and movies",
+    "source_urls": [
+      "https://www.imdb.com/list/ls565256337/",
+      "https://dizilah.com/lists/5rr30n"
+    ],
+    "status": "New",
+    "tags": [
+      "ottoman history",
+      "suleiman",
+      "turkish drama",
+      "sultan"
+    ],
+    "title_ar": null,
+    "title_en": "Magnificent Century",
+    "title_tr": "MuhteÅŸem YÃ¼zyÄ±l",
+    "title_translation": null,
+    "title_ur": null,
+    "type": "tv_series",
+    "updated_at": null,
+    "year": 2011,
+    "youtube_url": "https://www.youtube.com/watch?v=1ntIHUh7dmo"
+  },
+  {
+    "description": "Ridley Scott's epic film set during the Crusades, well-received in the Muslim world for its positive and nuanced portrayal of Saladin and Islamic civilization.",
+    "discovered_at": "2026-04-04T20:54:13.562Z",
+    "id": "7451af03-844f-4c79-991e-2b4883f431ec",
+    "islamic_finance_relevance": "high",
+    "language": "English",
+    "notes": "",
+    "source_prompt": "Historical Muslim TV shows and movies",
+    "source_urls": [
+      "https://www.imdb.com/list/ls567111014/",
+      "https://en.wikipedia.org/wiki/List_of_Islam-related_films"
+    ],
+    "status": "Approved",
+    "tags": [
+      "crusades",
+      "saladin",
+      "islamic civilization",
+      "historical epic"
+    ],
+    "title_ar": null,
+    "title_en": "Kingdom of Heaven",
+    "title_tr": null,
+    "title_translation": null,
+    "title_ur": null,
+    "type": "movie",
+    "updated_at": "2026-04-04T22:00:51.213Z",
+    "year": 2005,
+    "youtube_url": "https://www.youtube.com/watch?v=SoI5w0_46Ww"
+  },
+  {
+    "description": "Animated feature film inspired by the true story of Bilal ibn Rabah, one of Islam's earliest converts, tracing his journey from slavery to becoming a prominent figure in 7th-century Arabia.",
+    "discovered_at": "2026-04-04T20:54:13.562Z",
+    "id": "810c01f4-6857-4d7f-b17f-8554e257525d",
+    "islamic_finance_relevance": "high",
+    "language": "Arabic / English",
+    "notes": "animated film",
+    "source_prompt": "Historical Muslim TV shows and movies",
+    "source_urls": [
+      "https://www.imdb.com/list/ls567111014/",
+      "https://www.muslimpro.com/top-10-most-watched-islamic-movies/"
+    ],
+    "status": "Approved",
+    "tags": [
+      "animated",
+      "bilal ibn rabah",
+      "early islam",
+      "companion of the prophet"
+    ],
+    "title_ar": null,
+    "title_en": "Bilal: A New Breed of Hero",
+    "title_tr": null,
+    "title_translation": null,
+    "title_ur": null,
+    "type": "movie",
+    "updated_at": "2026-04-04T22:02:41.326Z",
+    "year": 2015,
+    "youtube_url": "https://www.youtube.com/watch?v=LF07MlChBMs"
+  },
+  {
+    "description": "Three-part BBC documentary presented by Rageh Omaar, written by Ziauddin Sardar. Broadcast on BBC Two over three weeks in July 2011. Critically examined the life of the Prophet.",
+    "discovered_at": "2026-04-04T20:54:13.562Z",
+    "id": "ec0a474c-64e7-4dd8-ad5c-c6c0e663162a",
+    "islamic_finance_relevance": "high",
+    "language": "English",
+    "notes": "3-part BBC Two series",
+    "source_prompt": "Historical Muslim TV shows and movies",
+    "source_urls": [
+      "https://www.1001inventions.com/top10documentaries/",
+      "https://halallifemagazine.com/top-7-best-islamic-history-tv-shows-to-watch/"
+    ],
+    "status": "New",
+    "tags": [
+      "bbc",
+      "prophet muhammad",
+      "documentary",
+      "rageh omaar"
+    ],
+    "title_ar": null,
+    "title_en": "The Life of Muhammad",
+    "title_tr": null,
+    "title_translation": null,
+    "title_ur": null,
+    "type": "documentary",
+    "updated_at": null,
+    "year": 2011,
+    "youtube_url": "https://www.youtube.com/watch?v=EBx-RYW1FjE"
+  },
+  {
+    "description": "90-minute BBC documentary presented by Rageh Omaar that uncovers Europe's hidden Islamic past and the Golden Age of Islamic learning on the European continent.",
+    "discovered_at": "2026-04-04T20:54:13.562Z",
+    "id": "f9e97184-638a-48d5-8ea6-191e16abe0ea",
+    "islamic_finance_relevance": "high",
+    "language": "English",
+    "notes": "90-minute BBC documentary",
+    "source_prompt": "Historical Muslim TV shows and movies",
+    "source_urls": [
+      "https://www.1001inventions.com/top10documentaries/",
+      "https://halallifemagazine.com/top-7-best-islamic-history-tv-shows-to-watch/"
+    ],
+    "status": "New",
+    "tags": [
+      "bbc",
+      "islamic golden age",
+      "europe",
+      "rageh omaar",
+      "history"
+    ],
+    "title_ar": null,
+    "title_en": "An Islamic History of Europe",
+    "title_tr": null,
+    "title_translation": null,
+    "title_ur": null,
+    "type": "documentary",
+    "updated_at": null,
+    "year": 2005,
+    "youtube_url": "https://www.youtube.com/watch?v=IydhetNgXWo"
+  },
+  {
+    "description": "PBS documentary covering the remarkable historical meeting between Egyptian Sultan Al-Kamil and St. Francis of Assisi during the Crusades â€” a story of dialogue across faiths.",
+    "discovered_at": "2026-04-04T20:54:13.562Z",
+    "id": "506a242e-a8e9-4550-91e8-5b64d165a439",
+    "islamic_finance_relevance": "high",
+    "language": "English",
+    "notes": "",
+    "source_prompt": "Historical Muslim TV shows and movies",
+    "source_urls": [
+      "https://www.pbs.org/show/american-muslims-a-history-revealed/",
+      "https://halallifemagazine.com/top-7-best-islamic-history-tv-shows-to-watch/"
+    ],
+    "status": "New",
+    "tags": [
+      "pbs",
+      "crusades",
+      "interfaith",
+      "sultan al-kamil",
+      "st. francis"
+    ],
+    "title_ar": null,
+    "title_en": "The Sultan and the Saint",
+    "title_tr": null,
+    "title_translation": null,
+    "title_ur": null,
+    "type": "documentary",
+    "updated_at": null,
+    "year": 2016,
+    "youtube_url": "https://www.youtube.com/watch?v=53h52Vp0pus"
+  },
+  {
+    "description": "Epic Arab production depicting the confrontation between the Ottoman Empire and the Mamluk Sultanate, featuring large-scale battle sequences and palace intrigue.",
+    "discovered_at": "2026-04-04T20:54:13.562Z",
+    "id": "e8b0f71e-2002-470b-b7b4-8da72771ec49",
+    "islamic_finance_relevance": "high",
+    "language": "Arabic",
+    "notes": "",
+    "source_prompt": "Historical Muslim TV shows and movies",
+    "source_urls": [
+      "https://dizilah.com/lists/5rr30n",
+      "https://www.imdb.com/list/ls094081124/"
+    ],
+    "status": "New",
+    "tags": [
+      "mamluk",
+      "ottoman",
+      "arabic drama",
+      "historical epic",
+      "battle"
+    ],
+    "title_ar": "Ù…Ù…Ù„ÙƒØ© Ø§Ù„Ù†Ø§Ø±",
+    "title_en": "Kingdoms of Fire",
+    "title_tr": null,
+    "title_translation": null,
+    "title_ur": null,
+    "type": "tv_series",
+    "updated_at": null,
+    "year": 2019,
+    "youtube_url": "https://www.youtube.com/watch?v=CNkq2EeDjiM"
+  },
+  {
+    "description": "Turkish historical drama on the life of Malik-Shah I and his son Ahmad Sanjar of the Seljuk Empire, depicting the peak of Seljuk power in the Islamic world.",
+    "discovered_at": "2026-04-04T20:54:13.562Z",
+    "id": "7a8fcc5d-94c2-457c-ae67-7aaa61325644",
+    "islamic_finance_relevance": "high",
+    "language": "Turkish",
+    "notes": "Also known as Rise of Empires: Ottoman / The Great Seljuks",
+    "source_prompt": "Historical Muslim TV shows and movies",
+    "source_urls": [
+      "https://www.imdb.com/list/ls567111014/",
+      "https://www.houseofpakistan.com/top-muslim-historical-series/"
+    ],
+    "status": "New",
+    "tags": [
+      "seljuk empire",
+      "turkish drama",
+      "malik shah",
+      "islamic history"
+    ],
+    "title_ar": null,
+    "title_en": "The Great Seljuks: Guardians of Justice",
+    "title_tr": "UyanÄ±ÅŸ: BÃ¼yÃ¼k SelÃ§uklu",
+    "title_translation": null,
+    "title_ur": null,
+    "type": "tv_series",
+    "updated_at": null,
+    "year": 2020,
+    "youtube_url": "https://www.youtube.com/watch?v=hisHJzRzgNk"
+  },
+  {
+    "description": "TRT historical drama based on the life of Hayreddin Barbarossa (Hayreddin Pasha) and his brothers â€” renowned Ottoman naval commanders of the 16th century.",
+    "discovered_at": "2026-04-04T20:54:13.562Z",
+    "id": "3ff35162-337d-4ad8-917f-d1e6fd4baa05",
+    "islamic_finance_relevance": "high",
+    "language": "Turkish",
+    "notes": "",
+    "source_prompt": "Historical Muslim TV shows and movies",
+    "source_urls": [
+      "https://www.imdb.com/list/ls567111014/",
+      "https://www.houseofpakistan.com/top-muslim-historical-series/"
+    ],
+    "status": "New",
+    "tags": [
+      "ottoman navy",
+      "barbarossa",
+      "turkish drama",
+      "mediterranean",
+      "16th century"
+    ],
+    "title_ar": null,
+    "title_en": "Barbaros: Sword of the Mediterranean",
+    "title_tr": null,
+    "title_translation": null,
+    "title_ur": null,
+    "type": "tv_series",
+    "updated_at": null,
+    "year": 2021,
+    "youtube_url": "https://www.youtube.com/watch?v=YqRMOi8eLBs"
+  },
+  {
+    "description": "44-episode Turkish historical drama about the life and teachings of Yunus Emre, the revered 13th-century Turkish Sufi poet and mystic. Praised for its portrayal of Sufi philosophy.",
+    "discovered_at": "2026-04-04T20:54:13.562Z",
+    "id": "1613e3f3-bdc2-4e4b-906f-79ab1a3632fe",
+    "islamic_finance_relevance": "high",
+    "language": "Turkish",
+    "notes": "44 episodes; ran 2015â€“2016",
+    "source_prompt": "Historical Muslim TV shows and movies",
+    "source_urls": [
+      "https://halallifemagazine.com/top-7-best-islamic-history-tv-shows-to-watch/",
+      "https://www.houseofpakistan.com/top-muslim-historical-series/"
+    ],
+    "status": "New",
+    "tags": [
+      "sufi",
+      "yunus emre",
+      "turkish drama",
+      "mysticism",
+      "13th century"
+    ],
+    "title_ar": null,
+    "title_en": "Yunus Emre: Journey of Love",
+    "title_tr": "Yunus Emre: AÅŸkÄ±n YolculuÄŸu",
+    "title_translation": null,
+    "title_ur": null,
+    "type": "tv_series",
+    "updated_at": null,
+    "year": 2015,
+    "youtube_url": "https://www.youtube.com/watch?v=yx5CpVB1ix8"
+  },
+  {
+    "description": "BBC documentary series covering the rise, peak, and fall of the Ottoman Empire and its role as a major Muslim power shaping European history for six centuries.",
+    "discovered_at": "2026-04-04T20:54:13.562Z",
+    "id": "a521c95c-23f3-4d3e-b040-1bd79d167c04",
+    "islamic_finance_relevance": "high",
+    "language": "English",
+    "notes": "",
+    "source_prompt": "Historical Muslim TV shows and movies",
+    "source_urls": [
+      "https://halallifemagazine.com/top-7-best-islamic-history-tv-shows-to-watch/",
+      "https://en.wikipedia.org/wiki/Category:Television_series_about_Islam"
+    ],
+    "status": "New",
+    "tags": [
+      "bbc",
+      "ottoman empire",
+      "european history",
+      "documentary",
+      "muslim history"
+    ],
+    "title_ar": null,
+    "title_en": "The Ottomans: Europe's Muslim Emperors",
+    "title_tr": null,
+    "title_translation": null,
+    "title_ur": null,
+    "type": "documentary",
+    "updated_at": null,
+    "year": 2013,
+    "youtube_url": "https://www.youtube.com/watch?v=5k8pPjKDFZ8"
+  }
+]
