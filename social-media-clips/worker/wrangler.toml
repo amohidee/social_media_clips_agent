@@ -1,0 +1,13 @@
+name = "islamic-media-worker"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+
+# After running `wrangler d1 create islamic-media-db`, paste the database_id below.
+[[d1_databases]]
+binding = "DB"
+database_name = "islamic-media-db"
+database_id = "PLACEHOLDER"
+
+# Set secrets via CLI (never commit these):
+#   wrangler secret put ANTHROPIC_API_KEY
+#   wrangler secret put YOUTUBE_API_KEY
