@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.env
+*.local
+social-media-clips/data/*.json
+social-media-clips/chunks.json
+social-media-clips/data.json
+social-media-clips/transcripts.json
